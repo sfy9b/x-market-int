@@ -1,11 +1,56 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Tweet {
+  id          String   @id
+  text        String
+  author      String
+  tweetUrl    String
+  postedAt    DateTime
+  processedAt DateTime @default(now())
+  companies   Company[]
+  catalysts   Catalyst[]
+}
+
+model Company {
+  id             String   @id @default(cuid())
+  ticker         String   @unique
+  name           String
+  researchBrief  String
+  sentiment      String
+  recentMention  String
+  price          Float?
+  priceChange    Float?
+  priceChangePct String?
+  firstMentioned DateTime @default(now())
+  lastUpdated    DateTime @updatedAt
+  tweets         Tweet[]
+  catalysts      Catalyst[]
+}
+
+model Catalyst {
+  id          String   @id @default(cuid())
+  type        String
+  description String
+  analysis    String
+  sentiment   String
+  detectedAt  DateTime @default(now())
+  company     Company  @relation(fields: [companyId], references: [id])
+  companyId   String
+  tweet       Tweet    @relation(fields: [tweetId], references: [id])
+  tweetId     String
+}
+
+model Digest {
+  id            String   @id @default(cuid())
+  content       String
+  stockCount    Int
+  catalystCount Int
+  generatedAt   DateTime @default(now())
 }
