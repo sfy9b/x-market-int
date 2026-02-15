@@ -24,7 +24,7 @@ async function getContext(browser: Browser): Promise<BrowserContext> {
   });
 }
 
-export async function scrapeTweets(handle: string, maxTweets = 10): Promise<ScrapedTweet[]> {
+export async function scrapeTweets(handle: string, maxTweets = 50): Promise<ScrapedTweet[]> {
   const browser = await chromium.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -43,7 +43,7 @@ export async function scrapeTweets(handle: string, maxTweets = 10): Promise<Scra
 
     await page.waitForSelector('article[data-testid="tweet"]', { timeout: 15000 });
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 10; i++) {
       await page.evaluate(() => window.scrollBy(0, 800));
       await page.waitForTimeout(1200 + Math.random() * 800);
     }
